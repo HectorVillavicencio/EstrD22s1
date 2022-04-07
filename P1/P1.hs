@@ -1,3 +1,21 @@
+--Parte 1
+
+--Parte 2
+--1
+sucesor :: Int -> Int
+sucesor n = n+1
+
+sumar:: Int -> Int -> Int
+sumar n m = n+m
+
+divisionYResto :: Int -> Int -> (Int, Int)
+divisionYResto n m = (div n m, mod n m)
+
+maxDelPar :: (Int,Int) -> Int
+maxDelPar (n,m) = if n>m
+				then n
+				else m
+
 --PARTE 3
 --3.1
 
