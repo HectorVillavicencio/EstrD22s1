@@ -1,4 +1,5 @@
 
+-- 1 Recursión sobre listas
 
 sumatoria :: [Int] -> Int
 sumatoria [] = 0
@@ -57,10 +58,10 @@ agregarAlFinal [] elem = [elem]
 agregarAlFinal (x:xs) elem = x:agregarAlFinal xs elem
 
 
-concatenar :: [a] -> [a] -> [a]
-concatenar xs [] = xs
-concatenar [] ys = ys
-concatenar xs ys = xs ++ ys 
+agregar :: [a] -> [a] -> [a]
+agregar xs [] = xs
+agregar [] ys = ys
+agregar xs ys = xs ++ ys 
 
 reversa :: [a] -> [a]
 reversa [] = []
@@ -73,12 +74,15 @@ zipMaximos (x:xs) (y:ys) = if x<y
 							then y : zipMaximos xs ys
 							else x : zipMaximos xs ys
 
---elMinimo :: Ord a => [a] -> a
---elMinimo [] = error "tiene que haber al menos un elemento"
---elMinimo (x:xs) = 
+elMinimo :: Ord a => [a] -> a
+elMinimo [] = error "tiene que haber al menos un elemento"
+elMinimo [x] = x
+elMinimo (x:xs) = if x > elMinimo xs
+							then x
+							else elMinimo xs
 
 
---PARTE 2
+--2  Recursión sobre números
 
 factorial :: Int -> Int
 factorial 0 = 1
@@ -107,7 +111,7 @@ sinLosPrimeros num (x:xs) = if num > 0
 							else x : sinLosPrimeros (num -1) xs
 
 
---PARTE 3
+--3 Registros
 
 data Persona = Pers String Int 
 
@@ -117,6 +121,7 @@ mayoresA num (x:xs) = if (edad x) > num
 						then x : mayoresA num xs
 						else mayoresA num xs
 
+-- esta en la anterior practica
 edad :: Persona -> Int
 edad (Pers nomb edad) = edad 
 
@@ -124,6 +129,7 @@ edad (Pers nomb edad) = edad
 promedioEdad :: [Persona] -> Int
 promedioEdad xs = div (sumarTodasLasEdades xs) (longitud xs)
 
+--suma todas las edades de las personas de la lista
 sumarTodasLasEdades :: [Persona] -> Int
 sumarTodasLasEdades [] = 0
 sumarTodasLasEdades (x:xs) = edad x + sumarTodasLasEdades xs
@@ -133,8 +139,9 @@ elMasViejo [x] = x
 elMasViejo (x:xs) = elMasViejodeDos x (elMasViejo xs)
 
 
-elMasViejodeDos :: Persona -> Persona -> Persona
-elMasViejodeDos (Pers nomb edad) (Pers nomb2 edad2) = if edad > edad2
+--Devuelev cual de las 2 personas es mas viejas
+elMasViejoDeDos :: Persona -> Persona -> Persona
+elMasViejoDeDos (Pers nomb edad) (Pers nomb2 edad2) = if edad > edad2
 														then Pers nomb edad
 														else Pers nomb2 edad2
 
