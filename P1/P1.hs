@@ -11,13 +11,84 @@ sumar n m = n+m
 divisionYResto :: Int -> Int -> (Int, Int)
 divisionYResto n m = (div n m, mod n m)
 
+
 maxDelPar :: (Int,Int) -> Int
 maxDelPar (n,m) = if n>m
 				then n
 				else m
 
---PARTE 3
+--2
+
+-- maxDelPar (divisionYResto (sumar 8 2) (sucesor 49))
+-- sucesor (sumar (maxDelPar (divisionYResto 9 1)) 0) 
+-- sucesor (maxDelPar (divisionYResto (sumar 8 1) (1)))
+-- sumar 1 (maxDelPar(divisionYResto (sumar 8 10) (sucesor 1)))
+
+--3 Tipos enumarativos 
 --3.1
+data Dir = Norte|Sur|Este|Oeste
+
+opuesto :: Dir -> Dir
+opuesto Norte = Sur
+opuesto Sur = Norte
+opuesto Oeste = Este
+opuesto Este = Oeste
+
+iguales :: Dir -> Dir -> Bool
+iguales Norte Norte = True
+iguales Sur Sur = True
+iguales Este Este = True
+iguales Oeste Oeste = True
+iguales _ _ = False
+
+-- siguiente es total y no tiene precondiciones ya que cualquier direccion que le des siempre tendra un resultado
+siguiente :: Dir -> Dir
+siguiente Norte = Este
+siguiente Este = Sur
+siguiente Sur = Oeste
+siguiente Oeste = Norte
+
+--3.2
+data DiaDeSemana = Lunes|Martes|Miercoles|Jueves|Viernes|Sabado|Domingo
+
+primeroYUltimoDia :: (DiaDeSemana, DiaDeSemana)
+primeroYUltimoDia = (Lunes,Domingo)
+
+empiezaConM :: DiaDeSemana -> Bool
+empiezaConM Miercoles = True
+empiezaConM Martes = True
+empiezaConM _ = False
+
+vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
+vieneDespues Lunes Martes =  True
+vieneDespues Martes Miercoles = True
+vieneDespues Miercoles Jueves = True
+vieneDespues Jueves Viernes = True
+vieneDespues Viernes Sabado = True
+vieneDespues Sabado Domingo = True
+vieneDespues Domingo Lunes = True
+vieneDespues _ _ = False
+
+--3.3
+negar:: Bool -> Bool
+negar True = False
+negar False = True
+
+implica :: Bool -> Bool -> Bool
+implica True False = False
+implica _ _ = True
+
+yTambien :: Bool -> Bool -> Bool
+yTambien True True = True
+yTambien _ _ = False
+
+oBien :: Bool -> Bool -> Bool
+oBien False False = False
+oBien _ _ = True
+
+
+--4 Registros
+--4.1
 
 data Persona = Consp String Int 
 
@@ -46,7 +117,7 @@ laQueEsMayor persona1 persona2 = if esMayorQueLaOtra persona1 persona2
 									else persona2
 
 
---3.2
+--4.2
 
 data TipoDePokemon = Agua | Fuego | Planta 
 
@@ -63,7 +134,7 @@ tipoDePokemon :: Pokemon -> TipoDePokemon
 tipoDePokemon (Poke tipo energia) = tipo
 
 
--- devuelve si el primer tipo le gana 
+-- devuelve True si el primer tipo le gana al otro
 tipoLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
 tipoLeGanaA Fuego Planta = True
 tipoLeGanaA Planta Agua = True
@@ -76,12 +147,18 @@ cantidadDePokemonesDe tipo (Ent nombre pokemon1 pokemon2) = sumaSiEsMismoTipo ti
 															sumaSiEsMismoTipo tipo (tipoDePokemon pokemon2)
 
 sumaSiEsMismoTipo :: TipoDePokemon -> TipoDePokemon -> Int
-sumaSiEsMismoTipo Fuego Fuego = 1
-sumaSiEsMismoTipo Agua Agua = 1
-sumaSiEsMismoTipo Planta Planta = 1
-sumaSiEsMismoTipo _ _ = 0
+sumaSiEsMismoTipo tipo1 tipo2 = if esMismoTipo tipo1 tipo2
+								then 1
+								else 0
 
--- parte 4
+--devuelve True si son el mismo tipo
+esMismoTipo :: TipoDePokemon -> TipoDePokemon -> Bool
+esMismoTipo Fuego Fuego =  True
+esMismoTipo Agua Agua = True
+esMismoTipo Planta Planta = True
+esMismoTipo _ _=False 								
+
+-- 5 Funciones Polimorficas
 
 loMismo :: a -> a
 loMismo x = x
@@ -93,7 +170,7 @@ swap :: (a,b) -> (b, a)
 swap (x,y) = (y,x)
 
 
---PARTE 5
+--PARTE 6
 
 estaVacia :: [a] -> Bool
 estaVacia [] = True
