@@ -60,13 +60,13 @@ empiezaConM Martes = True
 empiezaConM _ = False
 
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
-vieneDespues Lunes Martes =  True
-vieneDespues Martes Miercoles = True
-vieneDespues Miercoles Jueves = True
-vieneDespues Jueves Viernes = True
-vieneDespues Viernes Sabado = True
-vieneDespues Sabado Domingo = True
-vieneDespues Domingo Lunes = True
+vieneDespues Martes Lunes =  True
+vieneDespues Miercoles Martes = True
+vieneDespues Jueves Miercoles = True
+vieneDespues Viernes Jueves = True
+vieneDespues Sabado Viernes = True
+vieneDespues Domingo Sabado = True
+vieneDespues Lunes Domingo = True
 vieneDespues _ _ = False
 
 --3.3
@@ -79,12 +79,13 @@ implica True False = False
 implica _ _ = True
 
 yTambien :: Bool -> Bool -> Bool
-yTambien True True = True
-yTambien _ _ = False
+yTambien True b = b
+yTambien False _ = False
 
 oBien :: Bool -> Bool -> Bool
-oBien False False = False
-oBien _ _ = True
+oBien True _ = True
+oBien False b = b 
+
 
 
 --4 Registros
@@ -184,7 +185,7 @@ elPrimero [] = error "No tiene elementos esta lista"
 elPrimero (x:xs) = x
 
 sinElPrimero :: [a] -> [a]
-sinElPrimero [] = []
+sinElPrimero [] = error "debe haber al menos un elemento en la lista"
 sinElPrimero (x:xs) = xs
 
 

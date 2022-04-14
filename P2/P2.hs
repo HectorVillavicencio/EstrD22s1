@@ -1,4 +1,3 @@
-
 -- 1 Recursión sobre listas
 
 sumatoria :: [Int] -> Int
@@ -134,15 +133,61 @@ sumarTodasLasEdades :: [Persona] -> Int
 sumarTodasLasEdades [] = 0
 sumarTodasLasEdades (x:xs) = edad x + sumarTodasLasEdades xs
 
+--debe haber al menos una persona en la lista
 elMasViejo :: [Persona] -> Persona
 elMasViejo [x] = x
 elMasViejo (x:xs) = elMasViejodeDos x (elMasViejo xs)
 
 
---Devuelev cual de las 2 personas es mas viejas
+--Devuelev cual de las 2 personas es mas grande
 elMasViejoDeDos :: Persona -> Persona -> Persona
 elMasViejoDeDos (Pers nomb edad) (Pers nomb2 edad2) = if edad > edad2
 														then Pers nomb edad
 														else Pers nomb2 edad2
 
+-- 2 pokemones
+data TipoDePokemon = Agua | Fuego | Planta 
+data Pokemon = ConsPokemon TipoDePokemon Int
+data Entrenador = ConsEntrenador String [Pokemon]
 
+
+cantPokemon :: Entrenador -> Int
+cantPokemon (ConsEntrenador nombre poks) = longitud poks
+
+cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
+cantPokemonDe tipo (ConsEntrenador nombre poks) = contarSiHayTipo tipo poks
+
+--devuelve la cantidad de pokemon de un tipo en una lista
+--contarSiHayTipo :: TipoDePokemon -> [Pokemon] -> Int
+--contarSiHayTipo tipo (x:xs) = if esMismoTipo tipo esTipo x 
+--												1 + contarSiHayTipo tipo xs
+--													contarSiHayTipo tipo xs
+
+
+-- devuelve el tipo de pokemon
+esTipo :: Pokemon -> TipoDePokemon
+esTipo (ConsPokemon tipo energia) = tipo
+
+--devuelve True si son el mismo tipo
+esMismoTipo :: TipoDePokemon -> TipoDePokemon -> Bool
+esMismoTipo Fuego Fuego =  True
+esMismoTipo Agua Agua = True
+esMismoTipo Planta Planta = True
+esMismoTipo _ _=False
+
+losQueLeGanan :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+losQueLeGanan tipo (ConsEntrenador nombre1 poks1) (ConsEntrenador nombre2 poks2) = if sonDebilesAlTipo tipo poks2
+																						then sumarSiEsTipo tipo poks1
+																						else 0
+
+--Devuelve True si toda la lista de pokemon pierden ante el tipo dado
+sonDebilesAlTipo :: TipoDePokemon -> [Pokemon] -> Bool
+sonDebilesAlTipo tipo [] = True
+sonDebilesAlTipo tipo (x:xs) = tipoLeGanaA tipo (TipoDePokemon x) && SonDebilesAlTipo tipo xs
+
+-- devuelve True si el primer tipo le gana al otro
+tipoLeGanaA :: TipoDePokemon -> TipoDePokemon -> Bool
+tipoLeGanaA Fuego Planta = True
+tipoLeGanaA Planta Agua = True
+tipoLeGanaA Agua Fuego = True
+tipoLeGanaA _ _ = False
