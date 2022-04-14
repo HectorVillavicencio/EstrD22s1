@@ -60,14 +60,17 @@ empiezaConM Martes = True
 empiezaConM _ = False
 
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
-vieneDespues Martes Lunes =  True
-vieneDespues Miercoles Martes = True
-vieneDespues Jueves Miercoles = True
-vieneDespues Viernes Jueves = True
-vieneDespues Sabado Viernes = True
-vieneDespues Domingo Sabado = True
-vieneDespues Lunes Domingo = True
-vieneDespues _ _ = False
+vieneDespues dia1 dia2 = numeroDelDia dia1 > numeroDelDia dia2
+
+--Ordena los dias donde lunes es 1 hasta el domingo hasta 7
+numeroDelDia :: DiaDeSemana -> Int
+numeroDelDia Lunes = 1
+numeroDelDia Martes = 2
+numeroDelDia Miercoles = 3
+numeroDelDia Jueves = 4
+numeroDelDia Viernes = 5
+numeroDelDia Sabado = 6
+numeroDelDia domingo = 7
 
 --3.3
 negar:: Bool -> Bool
