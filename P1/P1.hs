@@ -160,7 +160,8 @@ esMismoTipo :: TipoDePokemon -> TipoDePokemon -> Bool
 esMismoTipo Fuego Fuego =  True
 esMismoTipo Agua Agua = True
 esMismoTipo Planta Planta = True
-esMismoTipo _ _=False 								
+esMismoTipo _ _=False 
+
 
 -- 5 Funciones Polimorficas
 
