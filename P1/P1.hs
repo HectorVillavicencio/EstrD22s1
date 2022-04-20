@@ -151,9 +151,13 @@ cantidadDePokemonesDe tipo (Ent nombre pokemon1 pokemon2) = sumaSiEsMismoTipo ti
 															sumaSiEsMismoTipo tipo (tipoDePokemon pokemon2)
 
 sumaSiEsMismoTipo :: TipoDePokemon -> TipoDePokemon -> Int
-sumaSiEsMismoTipo tipo1 tipo2 = if esMismoTipo tipo1 tipo2
-								then 1
-								else 0
+sumaSiEsMismoTipo tipo1 tipo2 = unoSi (esMismoTipo tipo1 tipo2)
+								
+
+--
+unoSi :: Bool -> Int
+unoSi True = 1
+unoSi False = 0
 
 --devuelve True si son el mismo tipo
 esMismoTipo :: TipoDePokemon -> TipoDePokemon -> Bool

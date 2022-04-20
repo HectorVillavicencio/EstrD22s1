@@ -30,8 +30,8 @@ sacar color (Bolita colorc celda) = if esMismocolor color colorc
 ponerN :: Int -> Color -> Celda -> Celda
 ponerN n color CeldaVacia = CeldaVacia
 ponerN n color (Bolita colorc celda) = if n > 0
-										then Bolita color (ponerN (n-1) color celda)
-										else ponerN n color celda
+										then poner color (ponerN (n-1) colorc celda)
+										else ponerN n colorc celda
 
 --1.2 Camino hacia el tesoro
 
@@ -52,6 +52,7 @@ tieneTesoro (x:xs) = esTesoro x || tieneTesoro xs
 esTesoro :: Objeto -> Bool
 esTesoro Tesoro = True
 esTesoro _ = False
+
 -- esta mal echo, falta recurcion
 pasosHastaTesoro :: Camino -> Int
 pasosHastaTesoro Fin = 0
@@ -61,10 +62,49 @@ pasosHastaTesoro (Cofre xs camino) = if tieneTesoro xs
 									else 1 + pasosHastaTesoro camino
 
 
-
 hayTesoroEn :: Int -> Camino -> Bool
 hayTesoroEn n Fin = False
-hayTesoroEn n (Nada camino) = False 
-hayTesoroEn n (Cofre xs camino) = if n > 0
-									then 2
-									else 2
+hayTesoroEn 0 (Nada camino) = False
+hayTesoroEn n (Nada camino) = hayTesoroEn (n-1) camino  
+hayTesoroEn 0 (Cofre xs camino) = tieneTesoro xs
+hayTesoroEn n (Cofre xs camino) = hayTesoroEn (n-1) camino
+
+alMenosNTesoros :: Int -> Camino -> Bool
+alMenosNTesoros n Fin = False
+alMenosNTesoros 0 (Nada camino) = False
+alMenosNTesoros n (Nada camino) = hayTesoroEn (n-1) camino  
+alMenosNTesoros 0 (Cofre xs camino) = tieneTesoro xs
+alMenosNTesoros n (Cofre xs camino) = tieneTesoro xs || hayTesoroEn (n-1) camino
+
+--cantTesorosEntre :: Int -> Int -> Camino -> Int
+--cantTesorosEntre r1  r2 
+
+--2 Tipos de Arboles
+--2.1
+data Tree a = EmptyT | NodeT a (Tree a) (Tree a) deriving Show
+
+
+sumarT :: Tree Int -> Int
+sumarT EmptyT = 0
+sumarT (NodeT a izq der) = a + sumarT izq + sumarT der
+
+sizeT :: Tree a -> Int
+sizeT EmptyT = 0
+sizeT (NodeT a izq der) = 1 + sizeT izq + sizeT der
+
+mapDobleT :: Tree Int -> Tree Int
+mapDobleT EmptyT = EmptyT
+mapDobleT (NodeT a izq der) = NodeT (a*2) (mapDobleT izq) (mapDobleT der)
+
+perteneceT :: Eq a => a -> Tree a -> Bool
+perteneceT a1 EmptyT = False
+perteneceT a1 (NodeT a2 izq der) = (a1 == a2) || perteneceT a1 izq || perteneceT a1 der
+
+aparicionesT :: Eq a => a -> Tree a -> Int
+aparicionesT a1 EmptyT = 0
+aparicionesT a1 (NodeT a2 izq der) = sumarSiEsElMismo a1 a2 + aparicionesT a1 izq + aparicionesT a1 der 
+
+sumarSiEsElMismo :: Eq a => a -> a -> Int
+sumarSiEsElMismo a1 a2 = if a1 == a2
+							then 1
+							else 0

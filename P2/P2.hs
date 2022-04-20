@@ -26,9 +26,7 @@ aplanar (x:xs) = x ++ aplanar xs
 
 pertenece :: Eq a => a -> [a] -> Bool
 pertenece elem [] = False
-pertenece elem (x:xs) = if elem == x 
-						then True
-						else pertenece elem xs
+pertenece elem (x:xs) = elem == x
 
 
 apariciones :: Eq a => a -> [a] -> Int
@@ -58,18 +56,19 @@ agregarAlFinal (x:xs) elem = x:agregarAlFinal xs elem
 
 
 agregar :: [a] -> [a] -> [a]
-agregar xs [] = xs
 agregar [] ys = ys
-agregar xs ys = xs ++ ys 
+agregar (x:xs) ys = x : agregar xs ys
 
 reversa :: [a] -> [a]
 reversa [] = []
 reversa (x:xs) = reversa xs ++ [x]
 
 
+
+
 zipMaximos :: [Int] -> [Int] -> [Int]
 zipMaximos [] [] = []
-zipMaximos (x:xs) (y:ys) = if x<y 
+zipMaximos (x:xs) (y:ys) = if x < y 
 							then y : zipMaximos xs ys
 							else x : zipMaximos xs ys
 
@@ -85,34 +84,23 @@ elMinimo (x:xs) = if x > elMinimo xs
 
 factorial :: Int -> Int
 factorial 0 = 1
-factorial num = (num * num) + factorial (num - 1)
+factorial num = num * factorial (num - 1)
 
 
 cuentaRegresiva :: Int -> [Int]
-cuentaRegresiva 1 = [1]
+cuentaRegresiva 0 = []
 cuentaRegresiva num = num : cuentaRegresiva (num - 1)
-
+  
 
 repetir :: Int -> a -> [a]
 repetir 0 elem = []
 repetir num elem = elem : repetir (num - 1) elem
 
 losPrimeros :: Int -> [a] -> [a]
-losPrimeros 0 (x:xs) = []
 losPrimeros num [] = []
+losPrimeros 0 (xs) = []
 losPrimeros num (x:xs) = x : losPrimeros (num - 1) xs
 
-
-sinLosPrimeros :: Int -> [a] -> [a]
-sinLosPrimeros num [] = []
-sinLosPrimeros num (x:xs) = if num > 0
-							then sinLosPrimeros (num -1) xs
-							else x : sinLosPrimeros (num -1) xs
-
-
---3 Registros
-
-data Persona = Pers String Int 
 
 mayoresA :: Int -> [Persona] -> [Persona]
 mayoresA num [] = []
