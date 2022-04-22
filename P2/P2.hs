@@ -26,7 +26,7 @@ aplanar (x:xs) = x ++ aplanar xs
 
 pertenece :: Eq a => a -> [a] -> Bool
 pertenece elem [] = False
-pertenece elem (x:xs) = elem == x
+pertenece elem (x:xs) = elem == x || pertenece elem xs
 
 
 apariciones :: Eq a => a -> [a] -> Int
@@ -67,17 +67,15 @@ reversa (x:xs) = reversa xs ++ [x]
 
 
 zipMaximos :: [Int] -> [Int] -> [Int]
-zipMaximos [] [] = []
-zipMaximos (x:xs) (y:ys) = if x < y 
-							then y : zipMaximos xs ys
-							else x : zipMaximos xs ys
+zipMaximos [] ys = ys
+zipMaximos xs [] = xs
+zipMaximos (x:xs) (y:ys) = max x y : zipMaximos xs ys  
+
 
 elMinimo :: Ord a => [a] -> a
 elMinimo [] = error "tiene que haber al menos un elemento"
 elMinimo [x] = x
-elMinimo (x:xs) = if x > elMinimo xs
-							then x
-							else elMinimo xs
+elMinimo (x:xs) = min x (elMinimo xs)
 
 
 --2  Recursión sobre números
@@ -88,8 +86,13 @@ factorial num = num * factorial (num - 1)
 
 
 cuentaRegresiva :: Int -> [Int]
-cuentaRegresiva 0 = []
-cuentaRegresiva num = num : cuentaRegresiva (num - 1)
+cuentaRegresiva n = if n <= 0
+					then []
+					else cuentaRegresiva' n
+
+cuentaRegresiva' :: Int -> [Int]
+cuentaRegresiva' 0 = []
+cuentaRegresiva' n = n: cuentaRegresiva (n-1)
   
 
 repetir :: Int -> a -> [a]
@@ -98,15 +101,26 @@ repetir num elem = elem : repetir (num - 1) elem
 
 losPrimeros :: Int -> [a] -> [a]
 losPrimeros num [] = []
-losPrimeros 0 (xs) = []
+losPrimeros 0 xs = []
 losPrimeros num (x:xs) = x : losPrimeros (num - 1) xs
 
 
-mayoresA :: Int -> [Persona] -> [Persona]
-mayoresA num [] = []
-mayoresA num (x:xs) = if (edad x) > num
-						then x : mayoresA num xs
-						else mayoresA num xs
+sinLosPrimeros ::  Int -> [a] -> [a]
+sinLosPrimeros n xs = if n < 0
+						then xs
+						else sinLosPrimeros' n xs
+
+sinLosPrimeros' :: Int -> [a] -> [a]
+sinLosPrimeros' n [] = []
+sinLosPrimeros' 0 xs = xs 
+sinLosPrimeros' n (x:xs) = sinLosPrimeros (n-1) xs 
+
+
+--mayoresA num [] = []
+--mayoresA num (x:xs) = if (edad x) > num
+--						then x : mayoresA num xs
+--						else mayoresA num xs
+data Persona = Pers String Int deriving Show
 
 -- esta en la anterior practica
 edad :: Persona -> Int
@@ -129,9 +143,13 @@ elMasViejo (x:xs) = elMasViejoDeLosDos x (elMasViejo xs)
 
 --Devuelev cual de las 2 personas es mas grande
 elMasViejoDeLosDos :: Persona -> Persona -> Persona
-elMasViejoDeLosDos (Pers nomb1 edad1) (Pers nomb2 edad2) = if edad1 > edad2
-															then Pers nomb1 edad1
-															else Pers nomb2 edad2
+elMasViejoDeLosDos p1 p2 = if edad p1 > edad p2
+	                        then p1
+	                        else p2
+
+pepito = Pers "pepe" 32
+juan = Pers "juan" 15
+
 
 -- 2 pokemones
 data TipoDePokemon = Agua | Fuego | Planta 
@@ -180,22 +198,13 @@ esDebilAlT Fuego Planta = True
 esDebilAlT _ _ = False
 
 esMaestroPokemon :: Entrenador -> Bool
-esMaestroPokemon (ConsEntrenador nomb poks) = tieneTipoAgua poks && tieneTipoFuego poks && tieneTipoPlanta poks
+esMaestroPokemon (ConsEntrenador nomb poks) = tieneTipo Agua poks && tieneTipo Fuego poks && tieneTipo Planta poks
 
---retorna true si tien al menos un tipo agua en la lista de pokemon
-tieneTipoAgua :: [Pokemon] -> Bool
-tieneTipoAgua [] = False
-tieneTipoAgua (x:xs) = esMismoTipo Agua (esTipo x) || tieneTipoAgua xs
+tieneTipo :: TipoDePokemon -> [Pokemon]-> Bool
+tieneTipo t [] = False
+tieneTipo t (x:xs) = esMismoTipo t (esTipo x) || tieneTipo t xs
 
---retorna true si tien al menos un tipo planta en la lista de pokemon
-tieneTipoPlanta :: [Pokemon] -> Bool
-tieneTipoPlanta [] = False
-tieneTipoPlanta (x:xs) = esMismoTipo Planta (esTipo x) || tieneTipoPlanta xs
 
---retorna true si tien al menos un tipo fuego en la lista de pokemon
-tieneTipoFuego :: [Pokemon] -> Bool
-tieneTipoFuego [] = False
-tieneTipoFuego (x:xs) = esMismoTipo Fuego (esTipo x) || tieneTipoFuego xs
 
 a = ConsPokemon Agua 23
 b = ConsPokemon Fuego 23
@@ -216,7 +225,7 @@ proyectos (ConsEmpresa roles) = sinRepetidos(sacarProyectosDe roles)
 --saca todos los proyectos repetidos
 sinRepetidos :: [Proyecto] -> [Proyecto]
 sinRepetidos [] = []
-sinRepetidos (x:xs) = if perteneceT x xs
+sinRepetidos (x:xs) = if tieneProyecto x (sinRepetidos xs)
 						then sinRepetidos xs
 						else x : sinRepetidos xs
 
@@ -233,26 +242,27 @@ sacarProyecto (Management seni proy) = proy
 
 -------------------------------------------------------------------------------------------------------------------
 losDevSenior :: Empresa -> [Proyecto] -> Int
-losDevSenior (ConsEmpresa roles) proys = sonDevSeniorYTieneProyecto roles proys
+losDevSenior (ConsEmpresa roles) proys = cantidadDevSeniorConProyecto roles proys
 
---retornalaCantidad de delevoper senior que tengan algun rolde de la lista										
-sonDevSeniorYTieneProyecto :: [Rol] -> [Proyecto] -> Int
-sonDevSeniorYTieneProyecto [] ys = 0
-sonDevSeniorYTieneProyecto (x:xs) ys = if esDevSeniorYTieneProyecto x ys 
-										then 1 + sonDevSeniorYTieneProyecto xs ys
-										else sonDevSeniorYTieneProyecto xs ys
+--retornalaCantidad de delevoper senior que tengan algun rolde de la lista	
+--sonDevSeniorYTieneProyecto									
+cantidadDevSeniorConProyecto :: [Rol] -> [Proyecto] -> Int
+cantidadDevSeniorConProyecto [] ys = 0
+cantidadDevSeniorConProyecto (x:xs) ys = if esDevSeniorYTieneProyecto x ys 
+										then 1 + cantidadDevSeniorConProyecto xs ys
+										else cantidadDevSeniorConProyecto xs ys
 
 										
 --retorna true si es un delevoper senior y tiene algun proyecto de la Lista
 esDevSeniorYTieneProyecto :: Rol -> [Proyecto] -> Bool
-esDevSeniorYTieneProyecto (Developer seni proy) xs = esSenior seni && perteneceT proy xs
+esDevSeniorYTieneProyecto (Developer seni proy) xs = esSenior seni && tieneProyecto proy xs
 
 -- devuelve true si el rol pertenece a la lista
-perteneceT :: Proyecto -> [Proyecto] -> Bool
-perteneceT str [] = False
-perteneceT str (x:xs) = if sonElMismo (nombreDeProyecto x) (nombreDeProyecto str) 
-						then True
-						else perteneceT str xs
+-- reemplazo a perteneceT
+tieneProyecto :: Proyecto -> [Proyecto] -> Bool
+tieneProyecto proy [] = False
+tieneProyecto proy (x:xs) = nombreDeProyecto proy == nombreDeProyecto x || tieneProyecto proy xs
+
 
 -- Retorna True si es el mismo elemento
 sonElMismo :: String -> String -> Bool
@@ -263,7 +273,7 @@ nombreDeProyecto :: Proyecto -> String
 nombreDeProyecto (ConsProyecto nomb) = nomb
 
 
---devuelve true si si el senior
+--devuelve true si es el senior
 esSenior :: Seniority -> Bool
 esSenior Senior = True
 esSenior _ = False
@@ -283,11 +293,23 @@ sumarSiTieneproyecto x (y:ys) = if sonElMismo (nombreDeProyecto x) (nombreDeProy
 									else sumarSiTieneproyecto x ys
 ------------------------------------------------------------------------------------------------------------------------------------
 asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
-asignadosPorProyecto (ConsEmpresa roles) = asignadosPorProyectoDe (proyectos (ConsEmpresa roles)) (sacarProyectosDe roles)
+asignadosPorProyecto empresa = asignadosPorProyectoDe (proyectos empresa) (sacarProyectoDeLosRoles empresa)
 
-asignadosPorProyectoDe :: [Proyecto] -> [Proyecto] -> [(Proyecto, Int)]
+
+sacarProyectoDeLosRoles :: Empresa -> [Proyecto]
+sacarProyectoDeLosRoles (ConsEmpresa roles) = sacarProyectosDe roles
+
+
+
+asignadosPorProyectoDe :: [Proyecto] -> [Proyecto] ->[(Proyecto, Int)]
 asignadosPorProyectoDe [] ys = []
-asignadosPorProyectoDe (x:xs) ys = (x, sumarSiTieneproyecto x ys) : asignadosPorProyectoDe xs ys
+asignadosPorProyectoDe (x:xs)  ys = (x, sumarSiTieneproyecto x ys) : asignadosPorProyectoDe xs ys
+
+
+--Es de la practica 1
+unoSi :: Bool -> Int
+unoSi True = 1
+unoSi False = 0
 
 
 

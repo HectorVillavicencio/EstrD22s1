@@ -1,7 +1,7 @@
 -- Ripos recursivos simples
 --1.1 Celdas con bolitas
-data Color = Azul | Rojo
-data Celda = Bolita Color Celda | CeldaVacia 
+data Color = Azul | Rojo deriving Show
+data Celda = Bolita Color Celda | CeldaVacia deriving Show
 
 nroBolitas :: Color -> Celda -> Int
 nroBolitas color CeldaVacia = 0
@@ -28,10 +28,10 @@ sacar color (Bolita colorc celda) = if esMismocolor color colorc
 
 
 ponerN :: Int -> Color -> Celda -> Celda
-ponerN n color CeldaVacia = CeldaVacia
-ponerN n color (Bolita colorc celda) = if n > 0
-										then poner color (ponerN (n-1) colorc celda)
-										else ponerN n colorc celda
+ponerN 0 _ celda = celda
+ponerN n color celda = Bolita color (ponerN (n-1) color celda)
+										
+celdita = Bolita Rojo (Bolita Azul CeldaVacia)
 
 --1.2 Camino hacia el tesoro
 
@@ -40,7 +40,7 @@ data Camino = Fin | Cofre [Objeto] Camino | Nada Camino
 
 hayTesoro :: Camino -> Bool
 hayTesoro Fin = False
-hayTesoro (Nada camino) = False || hayTesoro camino 
+hayTesoro (Nada camino) = hayTesoro camino 
 hayTesoro (Cofre xs camino) = tieneTesoro xs || hayTesoro camino
 
 --devueleve true si al menos hay un tesoro en la lista
@@ -53,7 +53,7 @@ esTesoro :: Objeto -> Bool
 esTesoro Tesoro = True
 esTesoro _ = False
 
--- esta mal echo, falta recurcion
+-- esta mal echo, falta recurcion usar el ceroSi
 pasosHastaTesoro :: Camino -> Int
 pasosHastaTesoro Fin = 0
 pasosHastaTesoro (Nada camino) = 1 + pasosHastaTesoro camino
@@ -63,11 +63,15 @@ pasosHastaTesoro (Cofre xs camino) = if tieneTesoro xs
 
 
 hayTesoroEn :: Int -> Camino -> Bool
+hayTesoroEn 0 camino = mirarSihayTesoroEnLaPrimeraPosicion camino
 hayTesoroEn n Fin = False
-hayTesoroEn 0 (Nada camino) = False
 hayTesoroEn n (Nada camino) = hayTesoroEn (n-1) camino  
-hayTesoroEn 0 (Cofre xs camino) = tieneTesoro xs
 hayTesoroEn n (Cofre xs camino) = hayTesoroEn (n-1) camino
+
+mirarSihayTesoroEnLaPrimeraPosicion :: Camino -> Bool
+mirarSihayTesoroEnLaPrimeraPosicion Fin = False
+mirarSihayTesoroEnLaPrimeraPosicion (Nada camino) = False
+mirarSihayTesoroEnLaPrimeraPosicion (Cofre xs camino) = hayTesoro xs
 
 alMenosNTesoros :: Int -> Camino -> Bool
 alMenosNTesoros n Fin = False
@@ -108,3 +112,4 @@ sumarSiEsElMismo :: Eq a => a -> a -> Int
 sumarSiEsElMismo a1 a2 = if a1 == a2
 							then 1
 							else 0
+
