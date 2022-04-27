@@ -182,9 +182,30 @@ esTipo (ConsPokemon tipo ener) = tipo
 
 
 losQueLeGanan :: TipoDePokemon -> Entrenador -> Entrenador -> Int
-losQueLeGanan tipo (ConsEntrenador nomb1 poks1) (ConsEntrenador nomb2 poks2) = if sonDebilesAlTipo tipo poks2
-																				then sumarLosPokeDeT tipo poks1
-																				else 0
+losQueLeGanan tipo (ConsEntrenador nomb1 poks1) (ConsEntrenador nomb2 poks2) = sumarSiLesGananATodos(soloLosDeUnTipo tipo poks1) poks2
+
+sumarSiLesGananATodos :: [Pokemon] -> [Pokemon] -> Int
+sumarSiLesGananATodos [] ys = 0
+sumarSiLesGananATodos (x:xs) ys = unoSi(leGanaATodos x ys) + sumarSiLesGananATodos xs ys
+
+leGanaATodos :: Pokemon -> [Pokemon] -> Bool
+leGanaATodos pok [] = True
+leGanaATodos pok (x:xs) =  pokemonLeGanaA pok x && leGanaATodos pok xs
+
+soloLosDeUnTipo ::TipoDePokemon -> [Pokemon] -> [Pokemon]
+soloLosDeUnTipo tipo [] = []
+soloLosDeUnTipo tipo (x:xs) = if esMismoTipo tipo (esTipo x)
+								then x : soloLosDeUnTipo tipo xs
+								else soloLosDeUnTipo tipo xs 
+
+--Viene de la practica 1
+unoSi :: Bool -> Int
+unoSi True = 1
+unoSi False = 0
+
+pokemonLeGanaA :: Pokemon -> Pokemon -> Bool
+pokemonLeGanaA (ConsPokemon tipo1 e1) (ConsPokemon tipo2 e2) = esDebilAlT tipo1 tipo2
+
 -- retorna true si todos los pokemon son debiles a un tipo
 sonDebilesAlTipo :: TipoDePokemon -> [Pokemon] -> Bool
 sonDebilesAlTipo tipo [] = True
@@ -228,6 +249,7 @@ sinRepetidos [] = []
 sinRepetidos (x:xs) = if tieneProyecto x (sinRepetidos xs)
 						then sinRepetidos xs
 						else x : sinRepetidos xs
+
 
 --devuelve todos los proyectos de los roles
 sacarProyectosDe :: [Rol] -> [Proyecto]
@@ -293,23 +315,22 @@ sumarSiTieneproyecto x (y:ys) = if sonElMismo (nombreDeProyecto x) (nombreDeProy
 									else sumarSiTieneproyecto x ys
 ------------------------------------------------------------------------------------------------------------------------------------
 asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
-asignadosPorProyecto empresa = asignadosPorProyectoDe (proyectos empresa) (sacarProyectoDeLosRoles empresa)
+asignadosPorProyecto (ConsEmpresa roles) = proyectosConSusInvolucrados roles
+
+proyectosConSusInvolucrados :: [Rol] -> [(Proyecto, Int)]
+proyectosConSusInvolucrados [] = []
+proyectosConSusInvolucrados (x:xs) = agregarProyectoDe x (proyectosConSusInvolucrados xs)
+
+agregarProyectoDe :: Rol ->  [(Proyecto, Int)] -> [(Proyecto, Int)]
+agregarProyectoDe rol [] = [(sacarProyecto rol, 0)] 
+agregarProyectoDe rol ((x,n):xs) = if sonElMismo (sacarNombreDelProyectosDe rol) (nombreDeProyecto x)
+										then (x ,n+1) : xs
+										else (x,n) : agregarProyectoDe rol xs
+
+sacarNombreDelProyectosDe :: Rol -> String 
+sacarNombreDelProyectosDe rol = nombreDeProyecto (sacarProyecto rol)
 
 
-sacarProyectoDeLosRoles :: Empresa -> [Proyecto]
-sacarProyectoDeLosRoles (ConsEmpresa roles) = sacarProyectosDe roles
-
-
-
-asignadosPorProyectoDe :: [Proyecto] -> [Proyecto] ->[(Proyecto, Int)]
-asignadosPorProyectoDe [] ys = []
-asignadosPorProyectoDe (x:xs)  ys = (x, sumarSiTieneproyecto x ys) : asignadosPorProyectoDe xs ys
-
-
---Es de la practica 1
-unoSi :: Bool -> Int
-unoSi True = 1
-unoSi False = 0
 
 
 
