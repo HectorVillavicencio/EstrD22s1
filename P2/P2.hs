@@ -248,11 +248,15 @@ sinRepetidos :: [Proyecto] -> [Proyecto]
 sinRepetidos [] = []
 sinRepetidos xs = sacarRepetidos xs 
 
---no puede tener una lista vacia
-sacarRepetidos ::  [Proyecto] -> [Proyecto]
+
+sacarRepetidos :: [Proyecto] -> [Proyecto]
+sacarRepetidos  [] = []
 sacarRepetidos (x:xs) = if tieneProyecto x (sacarRepetidos xs)
 						then sacarRepetidos xs
 						else x : sacarRepetidos xs
+
+sonElMismoP :: Proyecto -> Proyecto -> Bool
+sonElMismoP (ConsProyecto n1) (ConsProyecto n2) = n1 == n2
 
 --devuelve todos los proyectos de los roles
 sacarProyectosDe :: [Rol] -> [Proyecto]
@@ -328,7 +332,7 @@ proyectosConSusInvolucrados :: [Rol] -> [(Proyecto, Int)]
 proyectosConSusInvolucrados [] = []
 proyectosConSusInvolucrados (x:xs) = agregarProyectoDe x (proyectosConSusInvolucrados xs)
 
-agregarProyectoDe :: Rol ->  [(Proyecto, Int)] -> [(Proyecto, Int)]
+agregarProyectoDe :: Rol -> [(Proyecto, Int)] -> [(Proyecto, Int)]
 agregarProyectoDe rol [] = [(sacarProyecto rol, 1)] 
 agregarProyectoDe rol ((x,n):xs) = if sonElMismo (sacarNombreDelProyectosDe rol) (nombreDeProyecto x)
 										then (x ,n+1) : xs

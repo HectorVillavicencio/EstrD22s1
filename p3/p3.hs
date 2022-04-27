@@ -20,6 +20,7 @@ poner color CeldaVacia = Bolita color CeldaVacia
 poner color (Bolita colorc celda) = Bolita colorc (poner color celda)
 
 
+
 sacar :: Color -> Celda -> Celda
 sacar color CeldaVacia = CeldaVacia
 sacar color (Bolita colorc celda) = if esMismocolor color colorc
@@ -30,6 +31,10 @@ sacar color (Bolita colorc celda) = if esMismocolor color colorc
 ponerN :: Int -> Color -> Celda -> Celda
 ponerN 0 _ celda = celda
 ponerN n color celda = Bolita color (ponerN (n-1) color celda)
+
+
+
+
 										
 celdita = Bolita Rojo (Bolita Azul CeldaVacia)
 
