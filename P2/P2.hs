@@ -236,7 +236,7 @@ per = ConsEntrenador "villa" [a,b,c]
 
 
 data Seniority = Junior | SemiSenior | Senior
-data Proyecto = ConsProyecto String
+data Proyecto = ConsProyecto String deriving Show
 data Rol = Developer Seniority Proyecto | Management Seniority Proyecto
 data Empresa = ConsEmpresa [Rol]
 
@@ -246,15 +246,22 @@ proyectos (ConsEmpresa roles) = sinRepetidos(sacarProyectosDe roles)
 --saca todos los proyectos repetidos
 sinRepetidos :: [Proyecto] -> [Proyecto]
 sinRepetidos [] = []
-sinRepetidos (x:xs) = if tieneProyecto x (sinRepetidos xs)
-						then sinRepetidos xs
-						else x : sinRepetidos xs
+sinRepetidos xs = sacarRepetidos xs 
 
+--no puede tener una lista vacia
+sacarRepetidos ::  [Proyecto] -> [Proyecto]
+sacarRepetidos (x:xs) = if tieneProyecto x (sacarRepetidos xs)
+						then sacarRepetidos xs
+						else x : sacarRepetidos xs
 
 --devuelve todos los proyectos de los roles
 sacarProyectosDe :: [Rol] -> [Proyecto]
 sacarProyectosDe [] = []
 sacarProyectosDe (x:xs) = sacarProyecto x : sacarProyectosDe xs 
+
+pro1 = ConsProyecto "gatito"
+pro2 = ConsProyecto "perrito"
+pro3 = ConsProyecto "perico"
 
 
 --devueleve el proyecto del rol
@@ -322,7 +329,7 @@ proyectosConSusInvolucrados [] = []
 proyectosConSusInvolucrados (x:xs) = agregarProyectoDe x (proyectosConSusInvolucrados xs)
 
 agregarProyectoDe :: Rol ->  [(Proyecto, Int)] -> [(Proyecto, Int)]
-agregarProyectoDe rol [] = [(sacarProyecto rol, 0)] 
+agregarProyectoDe rol [] = [(sacarProyecto rol, 1)] 
 agregarProyectoDe rol ((x,n):xs) = if sonElMismo (sacarNombreDelProyectosDe rol) (nombreDeProyecto x)
 										then (x ,n+1) : xs
 										else (x,n) : agregarProyectoDe rol xs
