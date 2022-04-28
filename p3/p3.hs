@@ -58,12 +58,10 @@ esTesoro :: Objeto -> Bool
 esTesoro Tesoro = True
 esTesoro _ = False
 
--- esta mal echo, falta recurcion usar el ceroSi
 pasosHastaTesoro :: Camino -> Int
-pasosHastaTesoro Fin = 0
 pasosHastaTesoro (Nada camino) = 1 + pasosHastaTesoro camino
 pasosHastaTesoro (Cofre xs camino) = if tieneTesoro xs
-									then pasosHastaTesoro Fin
+									then 0
 									else 1 + pasosHastaTesoro camino
 
 
@@ -76,14 +74,20 @@ hayTesoroEn n (Cofre xs camino) = hayTesoroEn (n-1) camino
 mirarSihayTesoroEnLaPrimeraPosicion :: Camino -> Bool
 mirarSihayTesoroEnLaPrimeraPosicion Fin = False
 mirarSihayTesoroEnLaPrimeraPosicion (Nada camino) = False
-mirarSihayTesoroEnLaPrimeraPosicion (Cofre xs camino) = hayTesoro xs
+mirarSihayTesoroEnLaPrimeraPosicion (Cofre xs camino) = tieneTesoro xs 
+
 
 alMenosNTesoros :: Int -> Camino -> Bool
-alMenosNTesoros n Fin = False
-alMenosNTesoros 0 (Nada camino) = False
-alMenosNTesoros n (Nada camino) = hayTesoroEn (n-1) camino  
-alMenosNTesoros 0 (Cofre xs camino) = tieneTesoro xs
-alMenosNTesoros n (Cofre xs camino) = tieneTesoro xs || hayTesoroEn (n-1) camino
+alMenosNTesoros n Fin = n < 0
+alMenosNTesoros n (Nada camino) = alMenosNTesoros n camino 
+alMenosNTesoros n (Cofre xs camino) = alMenosNTesoros (n - devolverUnoSiTieneTesoro xs) camino
+
+devolverUnoSiTieneTesoro :: [Objeto] -> Int
+devolverUnoSiTieneTesoro xs = unoSi (tieneTesoro xs)
+
+unoSi :: Bool -> Int
+unoSi True = 1
+unoSi False = 0
 
 --cantTesorosEntre :: Int -> Int -> Camino -> Int
 --cantTesorosEntre r1  r2 
@@ -111,10 +115,10 @@ perteneceT a1 (NodeT a2 izq der) = (a1 == a2) || perteneceT a1 izq || perteneceT
 
 aparicionesT :: Eq a => a -> Tree a -> Int
 aparicionesT a1 EmptyT = 0
-aparicionesT a1 (NodeT a2 izq der) = sumarSiEsElMismo a1 a2 + aparicionesT a1 izq + aparicionesT a1 der 
+aparicionesT a1 (NodeT a2 izq der) = unoSi(sonElMismo a1 a2) + aparicionesT a1 izq + aparicionesT a1 der 
 
-sumarSiEsElMismo :: Eq a => a -> a -> Int
-sumarSiEsElMismo a1 a2 = if a1 == a2
-							then 1
-							else 0
+sonElMismo :: Eq a => a -> a -> Bool
+sonElMismo a1 a2 = a1 == a2
+							
+							
 

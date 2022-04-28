@@ -226,7 +226,6 @@ tieneTipo t [] = False
 tieneTipo t (x:xs) = esMismoTipo t (esTipo x) || tieneTipo t xs
 
 
-
 a = ConsPokemon Agua 23
 b = ConsPokemon Fuego 23
 c = ConsPokemon Planta 23
