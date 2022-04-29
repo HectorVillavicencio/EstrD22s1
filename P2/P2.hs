@@ -245,14 +245,13 @@ proyectos (ConsEmpresa roles) = sinRepetidos(sacarProyectosDe roles)
 --saca todos los proyectos repetidos
 sinRepetidos :: [Proyecto] -> [Proyecto]
 sinRepetidos [] = []
-sinRepetidos xs = sacarRepetidos xs 
+sinRepetidos (x:xs) = sacarRepetido x xs ++ sinRepetidos xs
 
 
-sacarRepetidos :: [Proyecto] -> [Proyecto]
-sacarRepetidos  [] = []
-sacarRepetidos (x:xs) = if tieneProyecto x (sacarRepetidos xs)
-						then sacarRepetidos xs
-						else x : sacarRepetidos xs
+sacarRepetido ::Proyecto -> [Proyecto] -> [Proyecto]
+sacarRepetido p xs = if tieneProyecto p xs
+						then []
+						else [p]
 
 sonElMismoP :: Proyecto -> Proyecto -> Bool
 sonElMismoP (ConsProyecto n1) (ConsProyecto n2) = n1 == n2

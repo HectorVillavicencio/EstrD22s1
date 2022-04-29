@@ -16,27 +16,31 @@ esMismocolor Azul Azul = True
 esMismocolor _ _ = False
 
 poner :: Color -> Celda -> Celda
-poner color CeldaVacia = Bolita color CeldaVacia
-poner color (Bolita colorc celda) = Bolita colorc (poner color celda)
+poner color celda = Bolita color celda
 
 
 
 sacar :: Color -> Celda -> Celda
 sacar color CeldaVacia = CeldaVacia
-sacar color (Bolita colorc celda) = if esMismocolor color colorc
-										then sacar color celda
+sacar color (Bolita colorc celda) = if esMismocolor color colorc 
+										then celda
 										else Bolita colorc (sacar color celda)
 
 
+
+
+
 ponerN :: Int -> Color -> Celda -> Celda
-ponerN 0 _ celda = celda
-ponerN n color celda = Bolita color (ponerN (n-1) color celda)
+ponerN n col celda = if n < 0
+						then celda
+						else ponerSi n col celda
 
+ponerSi :: Int-> Color -> Celda -> Celda
+ponerSi 0 col celda = celda
+ponerSi n col celda = poner col (ponerSi (n-1) col celda)
 
-
-
-										
-celdita = Bolita Rojo (Bolita Azul CeldaVacia)
+		
+celdita = Bolita Rojo (Bolita Azul (Bolita Azul (Bolita Rojo (Bolita Azul CeldaVacia))))
 
 --1.2 Camino hacia el tesoro
 
@@ -59,6 +63,7 @@ esTesoro Tesoro = True
 esTesoro _ = False
 
 pasosHastaTesoro :: Camino -> Int
+pasosHastaTesoro Fin = 0
 pasosHastaTesoro (Nada camino) = 1 + pasosHastaTesoro camino
 pasosHastaTesoro (Cofre xs camino) = if tieneTesoro xs
 									then 0
@@ -80,10 +85,12 @@ mirarSihayTesoroEnLaPrimeraPosicion (Cofre xs camino) = tieneTesoro xs
 alMenosNTesoros :: Int -> Camino -> Bool
 alMenosNTesoros n Fin = n < 0
 alMenosNTesoros n (Nada camino) = alMenosNTesoros n camino 
-alMenosNTesoros n (Cofre xs camino) = alMenosNTesoros (n - devolverUnoSiTieneTesoro xs) camino
+alMenosNTesoros n (Cofre xs camino) = alMenosNTesoros (n - (sumarLosTesoros xs)) camino
 
-devolverUnoSiTieneTesoro :: [Objeto] -> Int
-devolverUnoSiTieneTesoro xs = unoSi (tieneTesoro xs)
+
+sumarLosTesoros :: [Objeto] -> Int
+sumarLosTesoros [] = 0
+sumarLosTesoros (x:xs) = unoSi(esTesoro x) + sumarLosTesoros xs
 
 unoSi :: Bool -> Int
 unoSi True = 1
